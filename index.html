@@ -56,6 +56,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media(max-width:760px){.grid>*{grid-column:span 12}}
 .muted{color:var(--muted)}
 .btnpx{border:2px solid var(--ink);background:var(--win);border-radius:6px;padding:4px 12px;box-shadow:2px 2px 0 var(--shadow);font-family:var(--display)}
+.bform{display:flex;gap:8px;align-items:flex-end;margin-top:12px}.bform.wrap{flex-wrap:wrap}
+.bform label{display:flex;flex-direction:column;gap:3px;font-size:12px;flex:1;min-width:110px}
+.bform input{font:inherit;border:2px solid var(--ink);border-radius:6px;padding:5px 8px;background:#fff;color:var(--ink);min-width:0}
+.bform input:focus-visible,.bform button:focus-visible{outline:3px solid var(--pk,#f5a9d0);outline-offset:1px}
 .btnpx:active{transform:translate(2px,2px);box-shadow:none}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
@@ -242,12 +246,16 @@ button{font:inherit;color:inherit;cursor:pointer}
           <div class="stat"><span id="bleft"></span><span id="bpct"></span></div>
           <hr style="border:0;border-top:2px dotted var(--lav);margin:14px 0">
           <dl class="kv" id="bsum"></dl>
+          <hr style="border:0;border-top:2px dotted var(--lav);margin:14px 0">
+          <form id="goalForm" class="bform"><label>가용 예산 (만원)<input id="goalIn" type="number" min="0" inputmode="numeric" placeholder="3000"></label><button class="btnpx" type="submit">저장</button></form>
         </div>
       </div>
       <div class="win c7">
         <div class="tb"><span>항목별 지출</span><i>x</i></div>
         <div class="bd">
           <div class="tscroll"><table class="tbl" id="btbl"></table></div>
+          <form id="addForm" class="bform wrap"><label>항목<input id="aItem" required maxlength="100" placeholder="예: 드레스 대여"></label><label>분류<input id="aCat" maxlength="50" placeholder="예: 드레스·메이크업"></label><label>금액(만원)<input id="aAmt" type="number" min="0" inputmode="numeric"></label><label>계약금(만원)<input id="aDep" type="number" min="0" inputmode="numeric"></label><button class="btnpx" type="submit">추가</button></form>
+          <p class="muted" id="bnote" style="margin:6px 0 0;font-size:12px"></p>
           <p class="muted" style="margin:10px 0 0;font-size:12px">금액은 노션 💰 예산·지출에서 가져와요. 만원 단위예요.</p>
         </div>
       </div>
@@ -437,6 +445,7 @@ $('#cnow').onclick=()=>{cy=+today.slice(0,4);cm=+today.slice(5,7);renderCal()};
 function renderMoney(){
   const B=D.budget,sum=B.reduce((a,b)=>a+(+b.amount||0),0),paid=B.filter(b=>b.status==='완료').reduce((a,b)=>a+(+b.amount||0),0),goal=+D.goal||0;
   $('#btot').textContent=won(sum);
+  $('#bnote').textContent=live?'':'지금은 저장본이라 입력해도 저장되지 않아요.';
   $('#bgoal').textContent=goal?'가용 예산 '+won(goal):'';
   $('#bfill').style.width=goal?Math.min(100,sum/goal*100)+'%':'0';
   $('#bleft').textContent=goal?(goal>=sum?'남은 여유 '+won(goal-sum):'예산 초과 '+won(sum-goal)):'';
@@ -477,6 +486,13 @@ document.addEventListener('click',async e=>{
   }
   const mc=e.target.closest('.mchip');if(mc){selM=mc.dataset.m;renderTodo()}
 });
+async function post(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(r.status)}
+$('#goalForm').onsubmit=async e=>{e.preventDefault();const v=$('#goalIn').value;if(v==='')return;
+  if(!live)return toast('노션에 연결되면 저장할 수 있어요.');
+  try{await post('/api/budget',{action:'goal',value:+v});toast('가용 예산을 저장했어요.');$('#goalIn').value='';await load(false)}catch(_){toast('저장하지 못했어요. 다시 눌러 주세요.')}};
+$('#addForm').onsubmit=async e=>{e.preventDefault();
+  if(!live)return toast('노션에 연결되면 추가할 수 있어요.');
+  try{await post('/api/budget',{action:'add',item:$('#aItem').value,cat:$('#aCat').value,amount:+$('#aAmt').value||0,deposit:+$('#aDep').value||0});toast('예산표에 추가했어요.');e.target.reset();await load(false)}catch(_){toast('추가하지 못했어요. 다시 눌러 주세요.')}};
 $('#reload').onclick=()=>load(false);
 const PAGES=['home','todo','cal','money','shops','guests'];
 function route(){
