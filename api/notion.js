@@ -3,6 +3,18 @@ const { findDBs, queryAll, props } = require('./_notion');
 
 const man = n => (n == null ? 0 : Math.round((n / 10000) * 10) / 10); // 원 → 만원
 
+// 로드맵 항목이 속한 달(YYYY-MM): 목표일이 있으면 그 달, 없으면 예식일에서 '추천시기'만큼 거슬러 계산
+function monthKey(r, wed) {
+  const t = String(r['목표일'] || '').slice(0, 7);
+  if (t) return t;
+  if (!wed) return '';
+  let y = +wed.slice(0, 4), m = +wed.slice(5, 7);
+  const k = String(r['추천시기'] || '');
+  const mm = k.match(/^(\d+)개월/);
+  if (mm) { m -= +mm[1]; while (m < 1) { m += 12; y--; } }
+  return y + '-' + String(m).padStart(2, '0');
+}
+
 module.exports = async (req, res) => {
   const token = process.env.NOTION_TOKEN;
   if (!token) return res.status(500).json({ error: 'NOTION_TOKEN 환경변수가 없어요' });
@@ -36,7 +48,7 @@ module.exports = async (req, res) => {
       decisions: shops.filter(s => s.final || s.prog === '계약 완료').map(s => ({
         id: s.id, item: s.cat, status: s.prog === '계약 완료' ? '확정' : '진행 중', vendor: s.name, amount: s.price, date: '', memo: s.incl || ''
       })),
-      todo: raw.todo.map(r => ({ id: r.id, m: r['추천시기'], c: r['구분'], t: r['할 일'], s: r['완료'] ? '완료' : '할 일', due: d10(r['목표일']), ord: r['일 전'] }))
+      todo: raw.todo.map(r => ({ id: r.id, m: monthKey(r, wed), c: r['구분'], t: r['할 일'], s: r['완료'] ? '완료' : '할 일', due: d10(r['목표일']), ord: r['일 전'] }))
         .filter(r => r.t).sort((a, b) => (b.ord || 0) - (a.ord || 0)),
       events,
       budget: raw.budget.map(r => ({
