@@ -2,18 +2,8 @@
 const V = '2022-06-28';
 const clean = s => String(s || '').replace(/-/g, '').toLowerCase();
 
-// 노션 페이지에 들어 있는 데이터베이스 ID (주소 끝의 32자리). 필요하면 여기만 고치면 돼요.
-const DB = {
-  info: '423dae6dbf8481bea104d9505782ba5d',
-  budgetSum: '423dae6dbf8481a39742cbf712e57ffd',
-  decisions: '423dae6dbf848173b7fcfd509fa56fdd',
-  todo: '423dae6dbf8481ca8e3dde07596a8f9a',
-  events: '423dae6dbf84816b9caafcaf0c7dd351',
-  budget: '423dae6dbf8481d38215ee94ac904259',
-  shops: '423dae6dbf8481ada61ad5928a7455ca',
-  guests: '423dae6dbf848144a1a9caf71545f8e8'
-};
-
+// 사용 중인 데이터베이스 이름 (노션 "준비" 페이지 안의 DB 제목). 이름으로 자동으로 찾아요.
+const NAMES = { info: '우리 결혼 정보', budgetSum: '예산 요약', todo: '로드맵', events: '일정', budget: '예산표', shops: '업체 리스트', guests: '하객 명단' };
 async function call(path, token, opt = {}) {
   const r = await fetch('https://api.notion.com/v1' + path, {
     ...opt,
@@ -61,4 +51,26 @@ function val(p) {
 }
 const props = page => Object.fromEntries(Object.entries(page.properties).map(([k, v]) => [k, val(v)]));
 
-module.exports = { DB, clean, call, queryAll, props };
+// 통합에 연결된 데이터베이스를 검색해서 이름 → ID 표로 만들어요 (인스턴스 안에서 재사용).
+let cache = null;
+async function findDBs(token) {
+  if (cache && Date.now() - cache.t < 5 * 60 * 1000) return cache.m;
+  const found = {};
+  let cursor;
+  do {
+    const j = await call('/search', token, { method: 'POST', body: JSON.stringify({ filter: { property: 'object', value: 'database' }, page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) }) });
+    for (const d of j.results) {
+      const name = (d.title || []).map(x => x.plain_text).join('').replace(/[^\p{L}\p{N} ·]/gu, '').trim();
+      if (name && !found[name]) found[name] = d.id;
+    }
+    cursor = j.has_more ? j.next_cursor : undefined;
+  } while (cursor);
+  const m = {};
+  for (const [k, n] of Object.entries(NAMES)) m[k] = found[n];
+  const missing = Object.entries(m).filter(([, v]) => !v).map(([k]) => NAMES[k]);
+  if (missing.length) { const e = new Error('노션에서 이 데이터베이스를 못 찾았어요: ' + missing.join(', ') + ' (준비 페이지의 ··· → 연결에 통합이 추가돼 있는지 확인해 주세요)'); e.status = 404; throw e; }
+  cache = { t: Date.now(), m };
+  return m;
+}
+
+module.exports = { NAMES, findDBs, clean, call, queryAll, props };
