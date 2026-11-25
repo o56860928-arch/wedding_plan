@@ -1,0 +1,491 @@
+<title>우리 결혼 OS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+/* Layout: 레트로 OS 창 여러 개가 격자 배경 위에 떠 있는 구성. 위쪽 탭이 폴더 역할. */
+:root{
+  --ink:#2b2559;
+  --win:#ffffff;
+  --win2:#f1ecff;
+  --bar:#8ea9ee;
+  --bar-ink:#ffffff;
+  --pink:#f6a9cf;
+  --pink-d:#e0589b;
+  --lav:#d6b9f0;
+  --star:#f6dc7a;
+  --grid:rgba(255,255,255,.75);
+  --bg1:#f7b6d6;
+  --bg2:#b7b0ee;
+  --bg3:#9db4ee;
+  --muted:#6a6396;
+  --ok:#3f9d6b;
+  --shadow:rgba(43,37,89,.28);
+  --display:'DotGothic16','Nanum Gothic Coding',monospace;
+  --body:'Nanum Gothic Coding','DotGothic16',monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#f0eaff;--win:#241f4a;--win2:#2e2860;--bar:#5a6fc4;--bar-ink:#fff;--pink:#a8467f;--pink-d:#ff8cc4;--lav:#6a4aa0;--star:#f6dc7a;--grid:rgba(160,150,255,.18);--bg1:#3a2060;--bg2:#2a2a6a;--bg3:#1f2f6a;--muted:#b5acec;--ok:#6fe0a0;--shadow:rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#f0eaff;--win:#241f4a;--win2:#2e2860;--bar:#5a6fc4;--bar-ink:#fff;--pink:#a8467f;--pink-d:#ff8cc4;--lav:#6a4aa0;--star:#f6dc7a;--grid:rgba(160,150,255,.18);--bg1:#3a2060;--bg2:#2a2a6a;--bg3:#1f2f6a;--muted:#b5acec;--ok:#6fe0a0;--shadow:rgba(0,0,0,.5);color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--bg2)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.55;
+  background-color:var(--bg2);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),linear-gradient(180deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+  background-size:34px 34px,34px 34px,100% 100%;background-attachment:fixed}
+.wrap{max-width:1040px;margin:0 auto;padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pink-d);outline-offset:2px}
+
+/* 탭 */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:4px;overflow-x:auto;padding:14px 0 0;margin-bottom:18px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:2px solid var(--ink);border-bottom:0;border-radius:12px 12px 0 0;background:var(--lav);color:var(--ink);padding:7px 16px 6px;font-family:var(--display);font-size:15px}
+.tab[aria-selected=true]{background:var(--win);position:relative;top:0;font-weight:700}
+.tab.home{background:var(--star)}
+.tabline{height:2px;background:var(--ink);margin:-18px 0 18px}
+
+/* 창 */
+.win{background:var(--win);border:2px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--shadow);overflow:hidden;min-width:0}
+.tb{display:flex;align-items:center;gap:8px;background:var(--bar);color:var(--bar-ink);padding:5px 8px 5px 12px;border-bottom:2px solid var(--ink);font-family:var(--display);font-size:15px}
+.tb span:first-child{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb i{flex:none;width:18px;height:18px;border:2px solid var(--ink);background:var(--win);border-radius:3px;display:grid;place-items:center;font-style:normal;font-size:11px;line-height:1;color:var(--ink)}
+.bd{padding:14px 16px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(12,minmax(0,1fr));align-items:start}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media(max-width:760px){.grid>*{grid-column:span 12}}
+.muted{color:var(--muted)}
+.btnpx{border:2px solid var(--ink);background:var(--win);border-radius:6px;padding:4px 12px;box-shadow:2px 2px 0 var(--shadow);font-family:var(--display)}
+.btnpx:active{transform:translate(2px,2px);box-shadow:none}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* 홈 */
+.dday{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.dnum{font-family:var(--display);font-size:clamp(54px,12vw,92px);line-height:1;letter-spacing:-.02em;color:var(--pink-d);text-shadow:3px 3px 0 var(--shadow)}
+.dunit{font-family:var(--display);font-size:20px}
+.pbar{height:20px;border:2px solid var(--ink);border-radius:5px;background:var(--win2);overflow:hidden;display:flex}
+.pbar b{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--pink) 0 10px,var(--pink-d) 10px 12px);transition:width .3s}
+.stat{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+.kv dt{color:var(--muted)}.kv dd{margin:0;word-break:keep-all}
+.pill{display:inline-block;border:2px solid var(--ink);border-radius:99px;padding:0 10px;font-size:12px;background:var(--win2)}
+.pill.ok{background:var(--ok);color:#fff;border-color:var(--ink)}
+.pill.pk{background:var(--pink)}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.file{border:2px dashed var(--ink);border-radius:10px;background:var(--win2);padding:12px 8px;text-align:center;font-family:var(--display);font-size:15px;color:var(--ink);text-decoration:none;display:block}
+.file:hover{background:var(--pink)}
+.file small{display:block;font-family:var(--body);font-size:11px;color:var(--muted);margin-top:2px}
+.fi{display:block;font-size:26px;line-height:1.1;margin-bottom:4px}
+.deco{position:relative}
+.star{position:absolute;color:var(--star);font-size:26px;text-shadow:2px 2px 0 var(--shadow);pointer-events:none}
+.moon{position:absolute;right:6px;top:-8px;width:44px;height:44px;border-radius:50%;box-shadow:-11px 3px 0 0 var(--star);transform:rotate(-20deg);pointer-events:none}
+
+/* 체크리스트 */
+.mrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.mchip{border:2px solid var(--ink);background:var(--win);border-radius:8px;padding:3px 10px;font-family:var(--display);font-size:14px;line-height:1.3;text-align:center}
+.mchip small{display:block;font-family:var(--body);font-size:10.5px;color:var(--muted)}
+.mchip[aria-pressed=true]{background:var(--pink)}
+.mchip.done{background:var(--ok);color:#fff}.mchip.done small{color:#fff}
+.todo{list-style:none;margin:0;padding:0}
+.todo li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:2px dotted var(--lav)}
+.todo li:first-child{border-top:0}
+.cb{flex:none;width:22px;height:22px;border:2px solid var(--ink);border-radius:4px;background:var(--win);margin-top:1px;display:grid;place-items:center;color:transparent;font-size:15px;line-height:1}
+.cb[aria-checked=true]{background:var(--pink-d);color:#fff}
+.todo .t{flex:1;min-width:0;word-break:keep-all}
+.todo li.d .t{text-decoration:line-through;color:var(--muted)}
+.cat{flex:none;font-size:11px;border:2px solid var(--ink);border-radius:99px;padding:0 8px;background:var(--win2);white-space:nowrap}
+
+/* 달력 */
+.calh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.calh b{font-family:var(--display);font-size:20px;font-weight:400}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.cal div{min-height:54px;padding:3px 4px;border-right:1px solid var(--lav);border-bottom:1px solid var(--lav);font-size:12px;background:var(--win);min-width:0}
+.cal div:nth-child(7n){border-right:0}
+.cal .h{min-height:0;background:var(--bar);color:var(--bar-ink);text-align:center;font-family:var(--display);padding:2px}
+.cal .o{background:var(--win2);color:var(--muted)}
+.cal .today{box-shadow:inset 0 0 0 2px var(--pink-d)}
+.cal .ev{display:block;margin-top:2px;background:var(--pink);border:1px solid var(--ink);border-radius:4px;padding:0 3px;font-size:10.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal .ev.pay{background:var(--star)}
+.evl{list-style:none;margin:0;padding:0}
+.evl li{display:flex;gap:10px;padding:8px 0;border-top:2px dotted var(--lav)}
+.evl li:first-child{border-top:0}
+.evd{flex:none;font-family:var(--display);min-width:92px}
+
+/* 예산 */
+.big{font-family:var(--display);font-size:clamp(34px,7vw,52px);line-height:1.05;color:var(--pink-d);text-shadow:2px 2px 0 var(--shadow)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:7px 6px;border-top:2px dotted var(--lav);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left;white-space:normal}
+.tbl th{font-family:var(--display);font-weight:400;border-top:0;color:var(--muted)}
+.tscroll{overflow-x:auto}
+.cap{height:10px;border:2px solid var(--ink);border-radius:4px;background:var(--win2);overflow:hidden;margin-top:4px;min-width:90px}
+.cap b{display:block;height:100%;background:var(--pink-d)}
+
+/* 업체 / 하객 */
+.shop{border:2px solid var(--ink);border-radius:10px;padding:12px;background:var(--win2)}
+.stars{letter-spacing:2px}
+.empty{border:2px dashed var(--ink);border-radius:10px;padding:18px;text-align:center;background:var(--win2)}
+.pg{display:none}.pg.on{display:block}
+.foot{margin-top:26px;text-align:center;font-size:12px;color:var(--ink);opacity:.85}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.syn{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:99px;padding:1px 10px;background:var(--win);font-size:12px}
+.syn i{width:9px;height:9px;border-radius:50%;background:var(--muted);display:inline-block}
+.syn.on i{background:var(--ok)}.syn.off i{background:var(--pink-d)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--win);border-radius:8px;padding:8px 14px;font-size:13px;z-index:50}
+.gtbl td:nth-child(n+2),.gtbl th:nth-child(n+2){text-align:left}
+.shop+.shop{margin-top:12px}
+.shop.fin{background:var(--win);box-shadow:3px 3px 0 var(--shadow)}
+.pill.gr{background:var(--lav)}
+.dl{margin:0;padding:0;list-style:none}
+.dl li{display:flex;gap:10px;align-items:baseline;justify-content:space-between;padding:7px 0;border-top:2px dotted var(--lav)}
+.dl li:first-child{border-top:0}
+.dl .v{min-width:0;word-break:keep-all}
+</style>
+
+<div class="wrap">
+  <nav class="tabs" role="tablist" aria-label="메뉴">
+    <button class="tab home" role="tab" data-p="home">🔍 홈</button>
+    <button class="tab" role="tab" data-p="todo">12개월 체크리스트</button>
+    <button class="tab" role="tab" data-p="cal">일정</button>
+    <button class="tab" role="tab" data-p="money">예산·지출</button>
+    <button class="tab" role="tab" data-p="shops">업체 비교</button>
+    <button class="tab" role="tab" data-p="guests">하객</button>
+  </nav>
+  <div class="tabline"></div>
+
+  <!-- 홈 -->
+  <section class="pg" id="p-home">
+    <div class="grid">
+      <div class="win c7 deco">
+        <div class="tb"><span>wedding.exe</span><i>_</i><i>□</i><i>x</i></div>
+        <div class="bd">
+          <span class="star" style="right:22px;bottom:12px">★</span>
+          <div class="muted" id="hsub">&nbsp;</div>
+          <div class="dday"><span class="dnum" id="dnum">-</span><span class="dunit">일 남음</span></div>
+          <div class="stat"><span>준비 진행률</span><b id="pct">0%</b></div>
+          <div class="pbar" aria-label="준비 진행률"><b id="pfill" style="width:0%"></b></div>
+          <div class="stat muted"><span id="pdone"></span><span id="pnext"></span></div>
+        </div>
+      </div>
+      <div class="win c5">
+        <div class="tb"><span>이번 달 할 일</span><i>x</i></div>
+        <div class="bd"><ul class="todo" id="thisMonth"></ul></div>
+      </div>
+      <div class="win c4">
+        <div class="tb"><span>profile.txt</span><i>_</i><i>x</i></div>
+        <div class="bd"><dl class="kv" id="profile"></dl></div>
+      </div>
+      <div class="win c4">
+        <div class="tb"><span>최종 결정</span><i>x</i></div>
+        <div class="bd"><ul class="dl" id="decList"></ul></div>
+      </div>
+      <div class="win c4 deco">
+        <div class="tb"><span>folders</span><i>x</i></div>
+        <div class="bd">
+          <span class="moon"></span>
+          <div class="files">
+            <a class="file" href="#todo"><span class="fi">📁</span>체크리스트<small id="fTodo"></small></a>
+            <a class="file" href="#cal"><span class="fi">📅</span>일정<small>달력</small></a>
+            <a class="file" href="#money"><span class="fi">💰</span>예산<small>지출</small></a>
+            <a class="file" href="#shops"><span class="fi">🔎</span>업체<small>비교</small></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 체크리스트 -->
+  <section class="pg" id="p-todo">
+    <div class="win">
+      <div class="tb"><span>12개월 체크리스트</span><i>_</i><i>□</i><i>x</i></div>
+      <div class="bd">
+        <div class="mrow" id="mrow"></div>
+        <h3 id="mtitle" style="font-size:20px;margin-bottom:6px"></h3>
+        <ul class="todo" id="mlist"></ul>
+        <p class="muted" style="margin:12px 0 0;font-size:12px"><span id="todoNote"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 일정 -->
+  <section class="pg" id="p-cal">
+    <div class="grid">
+      <div class="win c8">
+        <div class="tb"><span>calendar.exe</span><i>_</i><i>□</i><i>x</i></div>
+        <div class="bd">
+          <div class="calh">
+            <button class="btnpx" id="cprev" aria-label="이전 달">◀</button>
+            <b id="ctitle"></b>
+            <span class="row"><button class="btnpx" id="cwed">예식 달</button><button class="btnpx" id="cnow">이번 달</button><button class="btnpx" id="cnext" aria-label="다음 달">▶</button></span>
+          </div>
+          <div class="cal" id="cal"></div>
+        </div>
+      </div>
+      <div class="win c4">
+        <div class="tb"><span>다가오는 일정</span><i>x</i></div>
+        <div class="bd"><ul class="evl" id="evl"></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 예산 -->
+  <section class="pg" id="p-money">
+    <div class="grid">
+      <div class="win c5">
+        <div class="tb"><span>budget.exe</span><i>_</i><i>x</i></div>
+        <div class="bd">
+          <div class="muted">잡은 예산 합계</div>
+          <div class="big" id="btot">-</div>
+          <div class="muted" style="margin-top:2px" id="bgoal"></div>
+          <div class="pbar" style="margin-top:12px"><b id="bfill" style="width:0"></b></div>
+          <div class="stat"><span id="bleft"></span><span id="bpct"></span></div>
+          <hr style="border:0;border-top:2px dotted var(--lav);margin:14px 0">
+          <dl class="kv" id="bsum"></dl>
+        </div>
+      </div>
+      <div class="win c7">
+        <div class="tb"><span>항목별 지출</span><i>x</i></div>
+        <div class="bd">
+          <div class="tscroll"><table class="tbl" id="btbl"></table></div>
+          <p class="muted" style="margin:10px 0 0;font-size:12px">금액은 노션 💰 예산·지출에서 가져와요. 만원 단위예요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 업체 -->
+  <section class="pg" id="p-shops">
+    <div class="win">
+      <div class="tb"><span>업체 비교</span><i>_</i><i>x</i></div>
+      <div class="bd" id="shopList"></div>
+    </div>
+  </section>
+
+  <!-- 하객 -->
+  <section class="pg" id="p-guests">
+    <div class="grid">
+      <div class="win c4">
+        <div class="tb"><span>guests.exe</span><i>x</i></div>
+        <div class="bd" id="gSum"></div>
+      </div>
+      <div class="win c8">
+        <div class="tb"><span>하객 명단</span><i>x</i></div>
+        <div class="bd"><div class="tscroll" id="gList"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot"><span class="syn off" id="syn"><i></i><span id="synT">불러오는 중</span></span> <button class="btnpx" id="reload" style="margin-left:6px">새로고침</button></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ── 저장본 (노션에 연결이 안 될 때만 보여요) ── */
+const SNAP={
+  info:{wed:'2027-10-31',venue:'더마레보',bride:'신부',groom:'신랑',meal:75000},goal:3000,
+  decisions:[{id:'s1',item:'예식장',status:'확정',vendor:'더마레보',amount:2330,date:'2027-10-31',memo:'11:00 · 보증 180명 · 계약금 300만 · 취소 시 위약금 100만 · 숙박 1일 무료 · 초과인원 20%까지 기존 단가 · 주류 별도'},
+    {id:'s2',item:'스드메',status:'미정'},{id:'s3',item:'예복·한복',status:'미정'},{id:'s4',item:'스냅·영상',status:'미정'},{id:'s5',item:'청첩장·답례품',status:'미정'},{id:'s6',item:'플래너',status:'진행 중'}],
+  todo:[
+['2026-11','예식장','계약서·견적서에 합의 조건이 그대로 적혔는지 확인 (프로모션 합산, 초과인원 20%, 숙박 1일, 위약금)'],
+['2026-11','예식장','라뷔포레에 정중하게 마무리 연락 (계약금·환불 조건 확인)'],
+['2026-11','계약·예산','계약금·잔금 일정과 취소 규정 정리'],
+['2026-11','계약·예산','총 예산 3,000만 원과 항목별 상한 확인'],
+['2026-11','거주·혼인신고','결혼 후 거주 방식 정하기 (월세 합가 / 각자 거주). 2028-07 입주 일정 고려'],
+['2026-11','거주·혼인신고','혼인신고 시점이 대출·청약에 미치는 영향을 은행에 확인'],
+['2026-11','기타','플래너 사용 여부 결정 (쓴다면 상담 2~3곳, 비용 구조 질문)'],
+['2026-12','스드메','스드메 구성 정하기 (드레스·메이크업만 / 촬영 포함)'],
+['2026-12','스드메','업체 후보 2~3곳 추리기 (항목별 가격 공개 여부 확인)'],
+['2026-12','하객','하객 명단 초안 만들기 (양가 합산 인원 파악)'],
+['2026-12','기타','양가 부모님과 준비 역할 나누기'],
+['2026-12','사진·영상','촬영 컨셉·참고 이미지 모으기'],
+['2027-01','스드메','후보 업체 상담, 항목별 서면 견적 받기 (원본·피팅·헬퍼 등 추가금 확인)'],
+['2027-01','스드메','스드메 계약 (환불·변경 조항, 추가금 항목 확인)'],
+['2027-01','예물','예물(반지) 예산과 스타일 정하기'],
+['2027-01','하객','하객 인원 중간 점검 (보증인원 180명 대비)'],
+['2027-02','스드메','웨딩 촬영 날짜 확정'],
+['2027-02','사진·영상','본식 스냅·영상 업체 비교 (더마레보 지정·제한 업체 여부 확인)'],
+['2027-02','예복·한복','한복 알아보기 (양가 어머님과 상의)'],
+['2027-02','예물','반지 구입'],
+['2027-03','스드메','드레스 투어·가봉 일정 잡기'],
+['2027-03','스드메','웨딩 촬영 진행'],
+['2027-03','거주·혼인신고','입주(2028-07) 전까지의 거주·이사 계획 점검'],
+['2027-03','기타','혼수·가전 목록 정리 (구매 시기는 입주에 맞추기)'],
+['2027-04','스드메','촬영 사진 셀렉·앨범 일정 확인'],
+['2027-04','예복·한복','예복 알아보기 (대여/맞춤)'],
+['2027-04','예식장','시식 일정 잡기'],
+['2027-04','청첩장·답례','청첩장 디자인 시안 보기'],
+['2027-05','청첩장·답례','청첩장 문구·디자인 확정'],
+['2027-05','기타','사회자·축가 섭외'],
+['2027-05','예복·한복','한복 확정 (대여/맞춤)'],
+['2027-05','하객','청첩장 보낼 주소·연락처 정리'],
+['2027-06','예복·한복','예복 확정, 가봉'],
+['2027-06','사진·영상','본식 스냅·영상 계약'],
+['2027-06','기타','혼주 메이크업·헤어 예약'],
+['2027-06','기타','폐백·이바지 여부 부모님과 상의'],
+['2027-07','청첩장·답례','청첩장 제작 주문'],
+['2027-07','예식장','하객용 생화 랩핑 선물 수량·방식 확인'],
+['2027-07','하객','하객 안내문 초안 (주차·교통, 먼 곳에서 오는 하객 배려)'],
+['2027-07','청첩장·답례','답례품 알아보기'],
+['2027-08','청첩장·답례','청첩장 수령·검수, 모바일 청첩장 준비'],
+['2027-08','기타','식순·BGM·오프닝 영상 준비'],
+['2027-08','예물','반지 수령, 사이즈 확인'],
+['2027-08','기타','신혼여행 시기·예약 (예산 별도, 11월 이후 예정)'],
+['2027-09','하객','청첩장 배포 시작 (모임·우편·모바일)'],
+['2027-09','예식장','보증인원 최종 확정일 확인, 인원 조정'],
+['2027-09','기타','사회자·축가자와 식순 협의'],
+['2027-09','스드메','본식 메이크업·헤어 리허설'],
+['2027-10','예식장','최종 인원·좌석 확정, 잔금 납부 일정 확인'],
+['2027-10','하객','하객 안내 문자 발송 (일시, 주차, 교통)'],
+['2027-10','기타','축의대·사진 촬영 등 당일 도와줄 사람 정하기'],
+['2027-10','기타','혼인서약서·방명록·축의봉투 등 소품 준비'],
+['2027-10','기타','D-1 체크: 반지·신분증·예복·답례품·축의봉투'],
+['2027-10','거주·혼인신고','혼인신고 (확인한 시점에 맞춰)']
+].map((x,i)=>({id:'t'+i,m:x[0],c:x[1],t:x[2],s:'할 일'})),
+  events:[{id:'e1',t:'더마레보 결혼식',d:'2027-10-31',time:'11:00',k:'wed'}],
+  budget:[{item:'더마레보 계약금',cat:'예식장',amount:300,status:'완료'},{item:'더마레보 잔금',cat:'예식장',amount:2030,status:'예정',date:'2027-10-31'},{item:'주류 (별도, 예상)',cat:'예식장',amount:120,status:'예정'},{item:'스드메 예산',cat:'스드메',amount:200,status:'예정'},{item:'예복·한복 예산',cat:'예복·한복',amount:80,status:'예정'},{item:'스냅·영상 예산',cat:'스냅·영상',amount:60,status:'예정'},{item:'청첩장·답례품 예산',cat:'청첩장·답례품',amount:50,status:'예정'},{item:'예비비',cat:'예비비',amount:50,status:'예정'}],
+  shops:[{id:'p1',name:'더마레보',cat:'예식장',price:2330,incl:'대관료·생화장식 850만원 · 식대 1인 7.5만원 × 180명 · 옵션 130만원 · 숙박 1일 무료',extra:'주류 별도 · 초과인원은 20%까지 기존 단가',pros:'프로모션 합산 가능, 단독 예식 2시간 30분',stars:'⭐⭐⭐⭐⭐',final:true}],
+  guests:[]
+};
+
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const won=n=>(+n||0).toLocaleString()+'만원';
+const today=ymd(new Date()),curM=today.slice(0,7);
+
+let D=SNAP,live=false,MONTHS=[],selM='',WED='',cy=0,cm=0;
+let local={};try{local=JSON.parse(localStorage.getItem('wed-done')||'{}')}catch(_){}
+const isDone=t=>live?t.s==='완료':!!local[t.id];
+
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)}
+
+/* ── 노션에서 읽기 ── */
+async function load(first){
+  $('#synT').textContent='불러오는 중';
+  try{
+    const r=await fetch('/api/notion',{cache:'no-store'});
+    if(!r.ok)throw new Error(r.status);
+    const j=await r.json();if(!j.todo)throw new Error('bad');
+    D=j;live=true;
+    $('#syn').className='syn on';$('#synT').textContent='노션 연결됨 · '+new Date(j.at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    D=SNAP;live=false;
+    $('#syn').className='syn off';$('#synT').textContent='저장본 (노션에 연결되지 않았어요)';
+  }
+  setup(first);
+}
+function setup(first){
+  WED=D.info.wed||'';
+  MONTHS=[...new Set(D.todo.map(t=>t.m).filter(Boolean))].sort();
+  if(!MONTHS.includes(selM))selM=MONTHS.includes(curM)?curM:(MONTHS[0]||'');
+  if(first||!cy){const b=WED||today;cy=+b.slice(0,4);cm=+b.slice(5,7)}
+  renderAll();
+}
+
+/* ── 체크리스트 ── */
+function li(t,withCat){const d=isDone(t);return `<li class="${d?'d':''}"><button class="cb" role="checkbox" aria-checked="${d}" aria-label="완료" data-id="${E(t.id)}">✓</button><span class="t">${E(t.t)}</span>${withCat&&t.c?`<span class="cat">${E(t.c)}</span>`:''}</li>`}
+function renderHome(){
+  const i=D.info;
+  $('#hsub').textContent=(WED?WED+' · ':'')+(i.venue||'');
+  const days=WED?Math.round((new Date(WED+'T00:00:00')-new Date(today+'T00:00:00'))/864e5):null;
+  $('#dnum').textContent=days==null?'-':days>=0?days:'D+'+(-days);
+  const n=D.todo.filter(isDone).length,tot=D.todo.length||1,p=Math.round(n/tot*100);
+  $('#pct').textContent=p+'%';$('#pfill').style.width=p+'%';$('#pdone').textContent=n+' / '+D.todo.length+' 완료';
+  const nx=D.todo.filter(t=>!isDone(t)).sort((a,b)=>(a.m||'').localeCompare(b.m||''))[0];
+  $('#pnext').textContent=nx?'다음: '+(nx.m||'').replace('-','.'):'모두 완료';
+  const mm=MONTHS.includes(curM)?curM:MONTHS[0];
+  $('#thisMonth').innerHTML=D.todo.filter(t=>t.m==mm&&!isDone(t)).slice(0,6).map(t=>li(t,false)).join('')||'<li class="muted">이번 달 할 일을 모두 끝냈어요.</li>';
+  $('#fTodo').textContent=D.todo.length+'개';
+  const v=D.decisions.find(x=>x.item==='예식장')||{};
+  const rows=[['예식장',E(i.venue||v.vendor||'-')+(v.status?` <span class="pill ${v.status==='확정'?'ok':''}">${E(v.status)}</span>`:'')],['일시',E(WED||'-')],['신부·신랑',E((i.bride||'')+' ♥ '+(i.groom||''))],['금액',v.amount?won(v.amount):'-']];
+  if(v.memo)rows.push(['메모',E(v.memo)]);
+  $('#profile').innerHTML=rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('');
+  $('#decList').innerHTML=D.decisions.map(x=>`<li><span>${E(x.item)}${x.vendor?`<span class="muted"> · ${E(x.vendor)}</span>`:''}</span><span class="pill ${x.status==='확정'?'ok':x.status==='진행 중'?'pk':''}">${E(x.status||'미정')}</span></li>`).join('')||'<li class="muted">아직 없어요.</li>';
+}
+function renderTodo(){
+  $('#mrow').innerHTML=MONTHS.map(m=>{const a=D.todo.filter(t=>t.m==m),d=a.filter(isDone).length;
+    return `<button class="mchip ${d==a.length?'done':''}" aria-pressed="${m==selM}" data-m="${m}">${+m.slice(5)}월<small>${d}/${a.length}</small></button>`}).join('');
+  $('#mtitle').textContent=selM?selM.slice(0,4)+'년 '+(+selM.slice(5))+'월':'';
+  $('#mlist').innerHTML=D.todo.filter(t=>t.m==selM).map(t=>li(t,true)).join('')||'<li class="muted">이 달 할 일이 없어요.</li>';
+  $('#todoNote').textContent=live?'체크하면 노션의 상태가 바로 바뀌어요.':'지금은 저장본이라 체크 표시가 이 브라우저에만 저장돼요.';
+}
+
+/* ── 달력 ── */
+const evs=()=>D.events.map(e=>({d:e.d,t:(e.t||'')+(e.time?' '+e.time:''),k:e.k}));
+function renderCal(){
+  $('#ctitle').textContent=cy+'년 '+cm+'월';
+  const E2=evs(),first=new Date(cy,cm-1,1),start=first.getDay(),dim=new Date(cy,cm,0).getDate(),prev=new Date(cy,cm-1,0).getDate();
+  let h=['일','월','화','수','목','금','토'].map(d=>`<div class="h">${d}</div>`).join('');
+  const cells=Math.ceil((start+dim)/7)*7;
+  for(let i=0;i<cells;i++){
+    let day=i-start+1,o=false,key=null;
+    if(day<1){day=prev+day;o=true}else if(day>dim){day-=dim;o=true}else key=cy+'-'+pad(cm)+'-'+pad(day);
+    const ev=key?E2.filter(e=>e.d==key).map(e=>`<span class="ev ${e.k}" title="${E(e.t)}">${E(e.t)}</span>`).join(''):'';
+    h+=`<div class="${o?'o':''} ${key==today?'today':''}">${day}${ev}</div>`;
+  }
+  $('#cal').innerHTML=h;
+  $('#evl').innerHTML=E2.filter(e=>e.d>=today).sort((a,b)=>a.d.localeCompare(b.d)).slice(0,8).map(e=>`<li><span class="evd">${e.d}</span><span>${E(e.t)}</span></li>`).join('')||'<li class="muted">예정된 일정이 없어요.</li>';
+}
+$('#cprev').onclick=()=>{cm--;if(cm<1){cm=12;cy--}renderCal()};
+$('#cnext').onclick=()=>{cm++;if(cm>12){cm=1;cy++}renderCal()};
+$('#cwed').onclick=()=>{const b=WED||today;cy=+b.slice(0,4);cm=+b.slice(5,7);renderCal()};
+$('#cnow').onclick=()=>{cy=+today.slice(0,4);cm=+today.slice(5,7);renderCal()};
+
+/* ── 예산 ── */
+function renderMoney(){
+  const B=D.budget,sum=B.reduce((a,b)=>a+(+b.amount||0),0),paid=B.filter(b=>b.status==='완료').reduce((a,b)=>a+(+b.amount||0),0),goal=+D.goal||0;
+  $('#btot').textContent=won(sum);
+  $('#bgoal').textContent=goal?'가용 예산 '+won(goal):'';
+  $('#bfill').style.width=goal?Math.min(100,sum/goal*100)+'%':'0';
+  $('#bleft').textContent=goal?(goal>=sum?'남은 여유 '+won(goal-sum):'예산 초과 '+won(sum-goal)):'';
+  $('#bpct').textContent=goal?Math.round(sum/goal*100)+'%':'';
+  $('#bsum').innerHTML=`<dt>지출 완료</dt><dd>${won(paid)}</dd><dt>앞으로 낼 돈</dt><dd>${won(sum-paid)}</dd>`+B.filter(b=>b.status!=='완료'&&b.date).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3).map(b=>`<dt>${E(b.date)}</dt><dd>${E(b.item)} ${won(b.amount)}</dd>`).join('');
+  const cats=[...new Set(B.map(b=>b.cat||'기타'))];
+  $('#btbl').innerHTML='<tr><th>항목</th><th>완료</th><th>예정</th><th>합계</th></tr>'+cats.map(c=>{const a=B.filter(b=>(b.cat||'기타')==c),d=a.filter(b=>b.status==='완료').reduce((s,b)=>s+(+b.amount||0),0),t=a.reduce((s,b)=>s+(+b.amount||0),0);
+    return `<tr><td>${E(c)}</td><td>${d?d.toLocaleString():'-'}</td><td>${(t-d)?(t-d).toLocaleString():'-'}</td><td><b>${t.toLocaleString()}</b></td></tr>`}).join('')+`<tr><td><b>합계</b></td><td><b>${paid.toLocaleString()}</b></td><td><b>${(sum-paid).toLocaleString()}</b></td><td><b>${sum.toLocaleString()}</b></td></tr>`;
+}
+
+/* ── 업체 / 하객 ── */
+function renderShops(){
+  const S=[...D.shops].sort((a,b)=>(b.final?1:0)-(a.final?1:0));
+  $('#shopList').innerHTML=S.map(s=>`<div class="shop ${s.final?'fin':''}"><div class="row" style="justify-content:space-between"><h3 style="font-size:20px">${E(s.name)}</h3><span class="row">${s.final?'<span class="pill ok">최종 선택</span>':''}${s.cat?`<span class="pill pk">${E(s.cat)}</span>`:''}</span></div>${s.stars?`<div class="stars" aria-label="별점">${E(s.stars)}</div>`:''}<dl class="kv" style="margin-top:8px">${s.price?`<dt>가격</dt><dd>${won(s.price)}</dd>`:''}${s.incl?`<dt>포함</dt><dd>${E(s.incl)}</dd>`:''}${s.extra?`<dt>추가금</dt><dd>${E(s.extra)}</dd>`:''}${s.pros?`<dt>장점</dt><dd>${E(s.pros)}</dd>`:''}${s.cons?`<dt>단점</dt><dd>${E(s.cons)}</dd>`:''}${s.contact?`<dt>연락처</dt><dd>${E(s.contact)}</dd>`:''}</dl></div>`).join('')||'<div class="empty">아직 비교할 업체가 없어요.<br><span class="muted">노션 🔎 업체 비교에 적으면 여기에 나와요.</span></div>';
+}
+function renderGuests(){
+  const G=D.guests,n=g=>g.n==null?1:+g.n;
+  const sure=G.filter(g=>g.att==='확실').reduce((a,g)=>a+n(g),0),maybe=G.filter(g=>g.att==='미정').reduce((a,g)=>a+n(g),0),exp=sure+maybe*0.5,gift=G.reduce((a,g)=>a+(+g.gift||0),0);
+  $('#gSum').innerHTML=`<div class="muted">예상 하객 (확실 1 · 미정 0.5)</div><div class="big">${exp%1?exp.toFixed(1):exp}명</div><dl class="kv" style="margin-top:10px"><dt>확실</dt><dd>${sure}명</dd><dt>미정</dt><dd>${maybe}명</dd><dt>축의금</dt><dd>${won(gift)}</dd><dt>보증인원</dt><dd>180명</dd></dl>`;
+  $('#gList').innerHTML=G.length?'<table class="tbl gtbl"><tr><th>이름</th><th>관계</th><th>측</th><th>참석</th><th>청첩장</th></tr>'+G.map(g=>`<tr><td>${E(g.name)}</td><td>${E(g.rel||'')}</td><td>${E(g.side||'')}</td><td>${E(g.att||'')}</td><td>${E(g.inv||'')}</td></tr>`).join('')+'</table>':'<div class="empty">아직 입력한 하객이 없어요.<br><span class="muted">노션 💌 하객·축의금에 적으면 여기에 나와요.</span></div>';
+}
+function renderAll(){renderHome();renderTodo();renderCal();renderMoney();renderShops();renderGuests()}
+
+/* ── 이벤트 ── */
+document.addEventListener('click',async e=>{
+  const cb=e.target.closest('.cb');
+  if(cb){
+    const t=D.todo.find(x=>String(x.id)===cb.dataset.id);if(!t)return;
+    const want=!isDone(t);
+    if(live){
+      const old=t.s;t.s=want?'완료':'할 일';renderAll();
+      try{
+        const r=await fetch('/api/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:t.id,done:want})});
+        if(!r.ok)throw new Error(r.status);
+      }catch(_){t.s=old;renderAll();toast('노션에 저장하지 못했어요. 다시 눌러 주세요.')}
+    }else{local[t.id]=want;try{localStorage.setItem('wed-done',JSON.stringify(local))}catch(_){}renderAll()}
+    return;
+  }
+  const mc=e.target.closest('.mchip');if(mc){selM=mc.dataset.m;renderTodo()}
+});
+$('#reload').onclick=()=>load(false);
+const PAGES=['home','todo','cal','money','shops','guests'];
+function route(){
+  const p=PAGES.includes(location.hash.slice(1))?location.hash.slice(1):'home';
+  $$('.pg').forEach(s=>s.classList.toggle('on',s.id=='p-'+p));
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.p==p));
+  window.scrollTo(0,0);
+}
+$$('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.p});
+addEventListener('hashchange',route);
+setup(true);route();load(true);
+</script>
